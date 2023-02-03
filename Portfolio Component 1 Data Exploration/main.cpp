@@ -67,6 +67,25 @@ double rangeOfNumericVector(vector <double> vectorVariableName){
     return vectorVariableName.at(vectorVariableName.size()-1)-vectorVariableName.at(0);
 }
 
+double covarianceBetweenTwoFeatures(vector <double> vectorX, vector <double> vectorY){
+    double meanOfX = meanOfNumericVector(vectorX);
+    double meanOfY = meanOfNumericVector(vectorY);
+    int numberOfObservations = vectorX.size();
+
+    double sumOfProduct = 0;
+    double differenceInXValues = 0;
+    double differenceInYValues = 0;
+
+    for (int index=0; index < numberOfObservations; index++){
+        differenceInXValues = vectorX.at(index) - meanOfX;
+        differenceInYValues = vectorY.at(index) - meanOfY;
+        sumOfProduct += differenceInXValues * differenceInYValues;
+    }
+
+    double covariance = sumOfProduct / (numberOfObservations-1);
+
+    return covariance;
+}
 
 int main(int argc, char** argv) {
     
@@ -121,6 +140,8 @@ int main(int argc, char** argv) {
 
     // cout << "The range of rm is == " << rangeOfNumericVector(rm_feature_vector) << endl;
     // cout << "The range of medv is == " << rangeOfNumericVector(medv_feature_vector) << endl;
+
+    cout << "The covariance between rm and medv is == " <<  covarianceBetweenTwoFeatures(rm_feature_vector, medv_feature_vector);
 
 
     return 0;
