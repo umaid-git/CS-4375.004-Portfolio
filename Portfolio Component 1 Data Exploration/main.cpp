@@ -62,11 +62,14 @@ double medianOfNumericVector(vector <double> vectorVariableName){
     }
 }
 
+// this function returns the range of numeric vector
 double rangeOfNumericVector(vector <double> vectorVariableName){
     sort(execution::par, vectorVariableName.begin(), vectorVariableName.end());
     return vectorVariableName.at(vectorVariableName.size()-1)-vectorVariableName.at(0);
 }
 
+// this function computes and returns the covariance between to features of a table
+// the formula below is take from Machine Learning Handbook Using R and Python by Dr. Karen Mazidi pg.74
 double covarianceBetweenTwoFeatures(vector <double> vectorX, vector <double> vectorY){
     double meanOfX = meanOfNumericVector(vectorX);
     double meanOfY = meanOfNumericVector(vectorY);
@@ -87,6 +90,38 @@ double covarianceBetweenTwoFeatures(vector <double> vectorX, vector <double> vec
     return covariance;
 }
 
+// this function calculates standard deviation in given set of values
+double standardDeviation(vector <double> vectorVariableName){
+    double mean = meanOfNumericVector(vectorVariableName);
+    double squareOfSumOfDifference = 0;
+    double numberOfObservations = vectorVariableName.size();
+    double difference = 0;
+
+    for(int index = 0; index < numberOfObservations; index++){
+        difference = vectorVariableName.at(index) - mean;
+        squareOfSumOfDifference += difference * difference;
+    }
+
+    double standardDeviation = sqrt(squareOfSumOfDifference/ (numberOfObservations-1));
+
+    return standardDeviation;
+}
+
+double correlationBetweenTwoFeatures(vector <double> vectorX, vector <double> vectorY){
+    double covariance = covarianceBetweenTwoFeatures(vectorX,vectorY);
+    double standardDeviationInX = standardDeviation(vectorX);
+    double standardDeviationInY = standardDeviation(vectorY);
+
+    double correlation = covariance / (standardDeviationInX * standardDeviationInY);
+
+    return correlation;
+
+}
+
+
+
+// The main function
+// few of the code snippets are taken from the professor provided starter code from Portfolio Component 1: Data Exploration
 int main(int argc, char** argv) {
     
     // variable declaration
@@ -129,19 +164,24 @@ int main(int argc, char** argv) {
     cout << "Closing the file" << endl;
     inputFileStream.close();
 
-    // cout << "The sum of rm is == " << sumOfNumericVector(rm_feature_vector) << endl;
-    // cout << "The sum of medv is == " << sumOfNumericVector(medv_feature_vector) << endl;
+    cout << "The sum of rm is == " << sumOfNumericVector(rm_feature_vector) << endl;
+    cout << "The sum of medv is == " << sumOfNumericVector(medv_feature_vector) << endl;
     
-    // cout << "The mean of rm is == " << meanOfNumericVector(rm_feature_vector) << endl;
-    // cout << "The mean of medv is == " << meanOfNumericVector(medv_feature_vector) << endl;
+    cout << "The mean of rm is == " << meanOfNumericVector(rm_feature_vector) << endl;
+    cout << "The mean of medv is == " << meanOfNumericVector(medv_feature_vector) << endl;
 
-    // cout << "The median of rm is == " << medianOfNumericVector(rm_feature_vector) << endl;
-    // cout << "The median of medv is == " << medianOfNumericVector(medv_feature_vector) << endl;
+    cout << "The median of rm is == " << medianOfNumericVector(rm_feature_vector) << endl;
+    cout << "The median of medv is == " << medianOfNumericVector(medv_feature_vector) << endl;
 
-    // cout << "The range of rm is == " << rangeOfNumericVector(rm_feature_vector) << endl;
-    // cout << "The range of medv is == " << rangeOfNumericVector(medv_feature_vector) << endl;
+    cout << "The range of rm is == " << rangeOfNumericVector(rm_feature_vector) << endl;
+    cout << "The range of medv is == " << rangeOfNumericVector(medv_feature_vector) << endl;
 
-    cout << "The covariance between rm and medv is == " <<  covarianceBetweenTwoFeatures(rm_feature_vector, medv_feature_vector);
+    cout << "The covariance between rm and medv is == " <<  covarianceBetweenTwoFeatures(rm_feature_vector, medv_feature_vector) << endl;
+
+    cout << " Standard deviation of rm == " << standardDeviation(rm_feature_vector) << endl;
+    cout << " Standard deviation of medv == " << standardDeviation(medv_feature_vector) << endl;
+
+    cout << "The correlation between rm and medv is == " << correlationBetweenTwoFeatures(rm_feature_vector,medv_feature_vector);
 
 
     return 0;
