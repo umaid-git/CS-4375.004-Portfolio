@@ -1,3 +1,10 @@
+// Name:       Umaid Ahmed
+// NetID:      UXA180002
+// Prof :      Dr. Prof. Karen Mazidi
+// Class :     CS4375.004
+// Assignment: Portfolio Component 1: Data Exploration
+// Due Date:   2/4/2023
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -107,6 +114,7 @@ double standardDeviation(vector <double> vectorVariableName){
     return standardDeviation;
 }
 
+// this function calculates the correlation between two features
 double correlationBetweenTwoFeatures(vector <double> vectorX, vector <double> vectorY){
     double covariance = covarianceBetweenTwoFeatures(vectorX,vectorY);
     double standardDeviationInX = standardDeviation(vectorX);
@@ -118,7 +126,13 @@ double correlationBetweenTwoFeatures(vector <double> vectorX, vector <double> ve
 
 }
 
-
+// this function prints the stat of a feature of the table. It prints the total sum, mean, median and range
+void print_stats(vector <double> vectorVariableName){
+    cout << "sum: \t" << sumOfNumericVector(vectorVariableName) << endl;
+    cout << "mean: \t" << meanOfNumericVector(vectorVariableName) << endl;
+    cout << "median:\t" << medianOfNumericVector(vectorVariableName) << endl;
+    cout << "range: \t" << rangeOfNumericVector(vectorVariableName) << endl;
+}
 
 // The main function
 // few of the code snippets are taken from the professor provided starter code from Portfolio Component 1: Data Exploration
@@ -137,7 +151,7 @@ int main(int argc, char** argv) {
     // reads and display the features/ column name
     cout << "Reading line1 " << endl;
     getline(inputFileStream, lineFromFile);
-    cout << " This is the line from file " << lineFromFile << endl;
+    // cout << " This is the line from file " << lineFromFile << endl;
 
     int numOfObservation = 0;
 
@@ -164,25 +178,38 @@ int main(int argc, char** argv) {
     cout << "Closing the file" << endl;
     inputFileStream.close();
 
-    cout << "The sum of rm is == " << sumOfNumericVector(rm_feature_vector) << endl;
-    cout << "The sum of medv is == " << sumOfNumericVector(medv_feature_vector) << endl;
+    // cout << "The sum of rm is == " << sumOfNumericVector(rm_feature_vector) << endl;
+    // cout << "The sum of medv is == " << sumOfNumericVector(medv_feature_vector) << endl;
     
-    cout << "The mean of rm is == " << meanOfNumericVector(rm_feature_vector) << endl;
-    cout << "The mean of medv is == " << meanOfNumericVector(medv_feature_vector) << endl;
+    // cout << "The mean of rm is == " << meanOfNumericVector(rm_feature_vector) << endl;
+    // cout << "The mean of medv is == " << meanOfNumericVector(medv_feature_vector) << endl;
 
-    cout << "The median of rm is == " << medianOfNumericVector(rm_feature_vector) << endl;
-    cout << "The median of medv is == " << medianOfNumericVector(medv_feature_vector) << endl;
+    // cout << "The median of rm is == " << medianOfNumericVector(rm_feature_vector) << endl;
+    // cout << "The median of medv is == " << medianOfNumericVector(medv_feature_vector) << endl;
 
-    cout << "The range of rm is == " << rangeOfNumericVector(rm_feature_vector) << endl;
-    cout << "The range of medv is == " << rangeOfNumericVector(medv_feature_vector) << endl;
+    // cout << "The range of rm is == " << rangeOfNumericVector(rm_feature_vector) << endl;
+    // cout << "The range of medv is == " << rangeOfNumericVector(medv_feature_vector) << endl;
 
-    cout << "The covariance between rm and medv is == " <<  covarianceBetweenTwoFeatures(rm_feature_vector, medv_feature_vector) << endl;
+    // cout << "The covariance between rm and medv is == " <<  covarianceBetweenTwoFeatures(rm_feature_vector, medv_feature_vector) << endl;
 
-    cout << " Standard deviation of rm == " << standardDeviation(rm_feature_vector) << endl;
-    cout << " Standard deviation of medv == " << standardDeviation(medv_feature_vector) << endl;
+    // cout << " Standard deviation of rm == " << standardDeviation(rm_feature_vector) << endl;
+    // cout << " Standard deviation of medv == " << standardDeviation(medv_feature_vector) << endl;
 
-    cout << "The correlation between rm and medv is == " << correlationBetweenTwoFeatures(rm_feature_vector,medv_feature_vector);
+    // cout << "The correlation between rm and medv is == " << correlationBetweenTwoFeatures(rm_feature_vector,medv_feature_vector);
 
+    cout << "Number of Records: " << numOfObservation << endl;
+
+    cout << "\nStats for rm: " << endl;
+    print_stats(rm_feature_vector);
+
+    cout << "\nStats for medv: " << endl;
+    print_stats(medv_feature_vector);
+
+    cout << "\nCovariance between rm and medv = " << covarianceBetweenTwoFeatures(rm_feature_vector,medv_feature_vector);
+    cout << "\nCorrelation between rm and medv = " << correlationBetweenTwoFeatures(rm_feature_vector,medv_feature_vector);
+
+
+    cout << "\nProgram Terminated.";
 
     return 0;
 }
