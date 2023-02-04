@@ -72,6 +72,9 @@ double medianOfNumericVector(vector <double> vectorVariableName){
 // this function returns the range of numeric vector
 double rangeOfNumericVector(vector <double> vectorVariableName){
     sort(execution::par, vectorVariableName.begin(), vectorVariableName.end());
+
+    // in a sorted list element at the first index is the minimum 
+    // and the element at the last index is the max. Range = max - min
     return vectorVariableName.at(vectorVariableName.size()-1)-vectorVariableName.at(0);
 }
 
@@ -207,7 +210,6 @@ int main(int argc, char** argv) {
 
     cout << "\nCovariance between rm and medv = " << covarianceBetweenTwoFeatures(rm_feature_vector,medv_feature_vector);
     cout << "\nCorrelation between rm and medv = " << correlationBetweenTwoFeatures(rm_feature_vector,medv_feature_vector);
-
 
     cout << "\nProgram Terminated.";
 
