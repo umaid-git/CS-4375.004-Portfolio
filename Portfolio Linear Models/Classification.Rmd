@@ -1,0 +1,226 @@
+---
+title: "Classification"
+author: "Umaid Ahmed"
+date: "2/18/2023"
+output:
+  html_document:
+    df_print: paged
+---
+
+source:https://www.kaggle.com/datasets/whenamancodes/credit-card-customers-prediction
+
+**(Note: Few of the code snippets used in this notebook is taken from Professor's notebooks on github repo)**
+
+In linear regression the target is quantitative while in logistical regression target is qualitative. In logistic regression the target is divided in to different classification. These classification can be binomial or it can be multiclass. In logistic regression the observations are separated into regions with each region having a same class.
+
+## Reading The Data
+
+```{r}
+df <- read.csv("Bank Churners.csv")
+
+```
+
+
+## Dividing Data into Training and Testing
+
+```{r}
+set.seed(1234)
+i <- sample(1:nrow(df), 0.80*nrow(df), replace=FALSE)
+train <- df[i,]
+test <- df[-i,]
+```
+
+## Data Exploration
+
+First lets take a look at the structure of the data
+
+```{r}
+str(train)
+```
+As it can be noted that there are 23 features in this data. Some of them are characters while others are numeric. For logistic regression we would be interested in the features that can be classified and predictors that can be good for the logistic regression.
+
+Now, lets take a look some head values in the training dataframe and see if there are any features that can be used for logistic regression:
+```{r}
+head(train)
+```
+Now, lets take a look some tail values in the training dataframe and see if there are any features that can be used for logistic regression:
+```{r}
+tail(train)
+```
+As we can see here there are columns that can be good predictor. For this dataset our target can be Income_Category and our predictors can be Customer_Age, Gender, Education_Level, Card_Category and Credit_Limit
+
+since we are only interested in 6 columns we can reduce the dataset to:
+**(Note:The only reason I am reusing code for test train is because Professor specified in the Assignment details to perform data exploration on training data. If I am making changes to training data then I have to make changes to testing data as well)**
+
+```{r}
+train <- train[,c(3,4,6,8,9,14)]
+test <- test[,c(3,4,6,8,9,14)]
+str(train)
+str(test)
+```
+storing some columns as factor so that we can perform logistic regression
+
+**(Note:The only reason I am reusing code for test train is because Professor specified in the Assignment details to perform data exploration on training data. If I am making changes to training data then I have to make changes to testing data as well)**
+```{r}
+
+train$Income_Category <- factor(train$Income_Category)
+train$Gender <- factor(train$Gender)
+train$Card_Category <- factor(train$Card_Category)
+train$Education_Level <- factor(train$Education_Level)
+
+test$Income_Category <- factor(test$Income_Category)
+test$Gender <- factor(test$Gender)
+test$Card_Category <- factor(test$Card_Category)
+test$Education_Level <- factor(test$Education_Level)
+
+str(train)
+str(test)
+```
+learning the names of different levels in income category to have a better understanding of the target
+
+```{r}
+levels(train$Income_Category)
+```
+
+Since we are only interested in the customer's age and credit limit let's take a look at the summary of those features:
+```{r}
+summary(train[, c(1,6)])
+```
+We can also use contrast to see how the target variable is classified
+```{r}
+contrasts(train$Income_Category)
+```
+The base case here is "120k +" while others are classified as there own string.
+
+## Informative Graph
+```{r}
+par(mfrow=c(1,2))
+plot(train$Income_Category)
+plot(train$Credit_Limit~train$Income_Category, notch=TRUE, xlab="Income Category", ylab="Credit Limit")
+```
+The graph on the left is an histogram of Income_category. It shows that data is spread out evenly except that there are less people in the 120k+ category and there are more people in less than 40K. The graph on the right is a box plot. The box plot shows how well the data is distributed. Income categories are on the x axis and credit limit is on the y axis. The bar in middle shows the median value. As it can be seen that most of the categories have credit limit more than the median range.  It can also be noted that some of the data point have a higher y-value, this can be due to large number of dataset.
+
+## Logistic Regression Model, Summary And Prediction  
+  
+**(Note: parts related to logistical regression on the assignment are consolidated together in this section because there are multiple classification of target so to make a model for these multiple classification I used a function. The model inside the function was inaccessible outside the function)**  
+  
+First we would divide the data set into different categories. Dataset in a category of itself will have the value of 1 while other categories will have a value of 0
+```{r}
+moreThan120k <- train
+moreThan120k$Income_Category <- as.factor(ifelse (moreThan120k$Income_Category == "$120K +",1,0))
+
+between40to60k <- train
+between40to60k$Income_Category <- as.factor(ifelse (between40to60k$Income_Category == "$40K - $60K",1,0))
+
+between60to80k <- train
+between60to80k$Income_Category <- as.factor(ifelse (between60to80k$Income_Category == "$60K - $80K",1,0))
+
+between80to120k <- train
+between80to120k$Income_Category <- as.factor(ifelse (between80to120k$Income_Category == "$80K - $120K",1,0))
+
+lessthan40k <- train
+lessthan40k$Income_Category <- as.factor(ifelse (lessthan40k$Income_Category == "Less than $40K",1,0))
+
+```
+
+
+Creating a logistical regression function for different categories of data. This function will create a logistical regression model and outputs the summary of the regression. This function also used to predict on the test data. For our logistic regression model the target is the Income category while all the others features in the dataset are the predictors. Than the function makes prediction on the test data. if the probability is higher than 0.5 it is registered as a 1 and if it is less that 0.5 than 0. Next we take out the mean which will tell us how accurate our model was in predicting
+**(Note: part 4d and 4f of the assignment are consolidated together in this function because the regression mode was inaccessible outside the function)**
+```{r}
+logistical_regression <- function(df, i){
+    train <- df[i,]
+    test <- df[-i,]
+    glm1 <- glm(Income_Category~., data=train, family="binomial")
+    print("===================printing Summary==============================")
+    print(summary(glm1))
+    print("=============Testing the model by making prediction==============")
+    probs <- predict(glm1, newdata=test, type="response")
+    pred <- ifelse(probs>0.5, 1, 0)
+    acc <- mean(pred==test$Income_Category)
+    print("===================printing accuracay===========================")
+    print(paste("accuracy = ", acc))
+    table(pred, test$Income_Category) 
+}
+```
+
+
+Using our logistical regression Function 
+```{r}
+print("****************** Using moreThan120k ********************************")
+logistical_regression(moreThan120k,i)
+print("****************** Using between40to60k ********************************")
+logistical_regression(between40to60k,i)
+print("****************** Using between60to80k ********************************")
+logistical_regression(between60to80k,i)
+print("****************** Using between80to120 ********************************")
+logistical_regression(between80to120k,i)
+print("****************** Using lessthan40k *********************************")
+logistical_regression(lessthan40k,i)
+```
+
+#### Summary
+The first thing the summary shows is the **formula**. This formula is used to predict the Income_category as function of other features as the predictor.  
+The second thing the summary shows is the **Deviance Residuals**. This is the measure of deviance calculated from each observation made on the dataset.  
+Next is the **Coefficients**. The Coefficients in logistic regression is calculated by using log odds of Y. As it can be seen in the model above (Model for lessthan40k) that the P value of GenderM, different card Categories and credit limit is very low which is really good for the model.  
+The bottom part of the summary shows the **Null deviance** and **Residual deviance**. Null deviance is based on the Intercept. If the predictors have an affect on the model we would see a decrease from Null Deviance to Residual Deviance. In the model above (lessthan40k) we can see there is about a 40% decrease from Null deviance to Residual deviance meaning the model is good. Apart from this model, all the model above shows a decrease in Residual deviance.  
+AIC stands for Akaike Information Criterion. It is used to compare model.  
+Number of Fisher scoring iterations refers to the number of iteration it took for optimizating the algorithm.
+
+#### Prediction result
+The prediction was made by using predict function. predict function uses the logistic regression model that was trained for set of values. We store the predict function value into probs (short for probability) variable. After that we sort out the probability using if else in which probabilities less than 0.5 were stored as 0 and probabilities greater than 0.5 were stored as one. After that we took the mean to find the accuracy of our model. As it turns out for models for different classification the least accuracy was 0.80 meaning our model was able to predict 80% of the value with 20% error while the highest accuracy was 0.92. A table is also printed showing the actual numbers. This table is also called confusion matrix. The table can be divided into this manner:  
+True_Positive   False_Positive
+False_Negative  True_Negative  
+For this table we look at the diagnol value (True_Positive and True_Negative). For the model above (lessthan40k) we can see that the model was able to predict that 839 customers falls into the category of less than 40k yearly income while 462 doesn't. While on the other hand our model predicted that 121 customers fall under less than 40k yearly income which was not true.
+
+
+## Naive Bayes, Summary And Prediction  
+  
+**(Note: parts related to Naive Bayes on the assignment are consolidated together in this section because there are multiple classification of target so to make a model for these multiple classification I used a function. The model inside the function was inaccessible outside the function)**  
+
+#### Summary
+For Naive Bayes we have to first load the library e1071 and then run the naive bayes model on the training data. Here we are trying to predict Income_Category based on the Customer_Age, Gender, Education_Level, Card_Category and Credit_Limit
+
+```{r}
+library(e1071)
+nb1 <- naiveBayes(Income_Category~ ., data=train)
+nb1
+```
+
+The Naive bayes uses laplace smoothing. The summary of the model shows us the **A-priori probablities** on the training data. It tells us that there is 0.35020368 prior probability that customer falls under Less than $40K and we can see other prior probability under the classified groups. We also have the **conditional probability**. lets take gender for an example. Our model shows that the  probability that a person that falls into income category of 120k+ is mostly male. It also tells as that there is a 0.56 probability that a person who falls under 40K - 60K is female. For quantitative predictors like Customer_Age and Credit_Limit we get the standard deviation and the mean
+
+```{r}
+naive_bayes <- function(df,i){
+  train <- df[i,]
+  test <- df[-i,]
+  nb1 <- naiveBayes(Income_Category~ ., data=train)
+  print("=============Testing the model by making prediction==============")
+  p1 <- predict(nb1, newdata=test, type="class")
+  print("===================printing accuracay===========================")
+  accuracy <- mean(p1==test$Income_Category)
+  print(paste("accuracy:", accuracy))
+  print(table(p1, test$Income_Category))
+}
+```
+
+
+```{r}
+print("****************** Using moreThan120k ********************************")
+naive_bayes(moreThan120k,i)
+print("****************** Using between40to60k ********************************")
+naive_bayes(between40to60k,i)
+print("****************** Using between60to80k ********************************")
+naive_bayes(between60to80k,i)
+print("****************** Using between80to120 ********************************")
+naive_bayes(between80to120k,i)
+print("****************** Using lessthan40k *********************************")
+naive_bayes(lessthan40k,i)
+```
+
+#### Evaluate and Predict:
+Evaluation was made using predict function on nb1 (naive bayes) model. We also print the confusion matrix. The accuracy was calculated as the mean accuracy. **(for more information check prediction result under Regression model. It follows the same patern)** 
+
+
+## Strengths and Weaknesses of Logistic Regression and Naive Bayes
+Logistic regression makes the estimate on the probability directly of Y on the give value of X and such and is refer as discriminative classifier. Naive bayes makes the estimate on the probability directly of Y, classification of the features and the likelihood of the data on given Y and refer to as a generative classifier.
+Naive Bayes will outperform Logistic regression if the data used is small. If you have more data then logistic regression outperforms Naive Bayes. Naive Bayes have lower variance but higher bias than logistic regression. Naive Bayes is easier to implement and interpret. Naive bayes makes guesses on the data set which it wasn't train for.
+

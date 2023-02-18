@@ -1,0 +1,198 @@
+---
+title: "Regression"
+author: "Umaid Ahmed"
+date: "2/18/2023"
+output:
+  html_document:
+    df_print: paged
+---
+
+The source of the data taken in this book is: https://www.kaggle.com/datasets/shibumohapatra/house-price  
+**(Note: Few of the code snippets used in this notebook is taken from Professor's notebooks on github repo)**
+
+## Reading the data from a CSV file
+
+First we read the data into a variable call df
+```{r}
+df<-read.csv("California House Price.csv")
+```
+
+
+## Dividing data into training and testing
+
+We randomly sample the rows to get a vector i with row indices. This is used to divide into train and test sets.
+
+```{r}
+set.seed(1234)
+i <- sample(1:nrow(df), nrow(df)*0.8, replace=FALSE)
+train <- df[i,]
+test <- df[-i,]
+```
+
+
+
+## Data Exploration
+Once we have loaded the data we would like to explore the data.
+
+First, we would like to check the dimensions of the data so that we know that there is enough data to train and test a new model
+```{r}
+dim(train)
+```
+As we can see, we have 10 predictors and 20640 rows of data which would be sufficient for training and testing purposes.
+
+
+Now lets find out what are the column names of the data so that we can have a better understanding
+```{r}
+colnames(train)
+```
+From the source where the data is taken the features are described as:
+
+**longitude** (signed numeric - float) : Longitude value for the block in California, USA  
+**latitude** (numeric - float ) : Latitude value for the block in California, USA  
+**housing_median_age** (numeric - int ) : Median age of the house in the block  
+**total_rooms** (numeric - int ) : Count of the total number of rooms (excluding bedrooms) in all houses in the block  
+**total_bedrooms** (numeric - float ) : Count of the total number of bedrooms in all houses in the block  
+**population** (numeric - int ) : Count of the total number of population in the block  
+**households** (numeric - int ) : Count of the total number of households in the block  
+**median_income** (numeric - float ) : Median of the total household income of all the houses in the block  
+**ocean_proximity** (numeric - categorical ) : Type of the landscape of the block [ Unique Values : 'NEAR BAY', '<1H OCEAN', 'INLAND', 'NEAR OCEAN', 'ISLAND' ]  
+**median_house_value** (numeric - int ) : Median of the household prices of all the houses in the block  
+(Note the description above is directly taken from source: https://www.kaggle.com/datasets/shibumohapatra/house-price )
+
+
+Finding out columns which have NA's
+
+```{r}
+
+sapply(train, function(x) sum(is.na(x)))
+
+```
+
+str() can be used to see some values of the data
+
+```{r}
+str(train)
+```
+
+summary() provide the summarized version of each column. It provides some useful information like mean, meadian min and max
+
+```{r}
+summary(train, na.rm=TRUE)
+```
+Now we would like to see if there is any correlation between columns. This can help us by finding if the correlation of both variables are going up or going down or either one is going up and other is going down. Since the ocean_proximity is not a numeric value we would run into error so We can filter out the non numeric column and then try to find out the correlation
+
+```{r}
+cor(train[, unlist(lapply(train, is.numeric))], use = "complete.obs")
+
+```
+Correlation between two variable lies in the range 1 < cor < -1 . Correlations that are near 1 or -1 shows that there is a strong positive or negative correlation between them, while correlation near 0 shows that there is no correlation at all. Here we are ignoring correlation between latitude and longitude as they are the location of the blocks. We can see here that there is a strong correlation between total_rooms with total_bedrooms and household which is about 0.92 and 0.91 and there is also a good correlation between total_rooms and population which is 0.86. There is also a strong correlation between households with total_bedrooms, population and total_rooms which is 0.97, 0.91 and 0.91.
+
+
+## Data Visualization
+
+```{r}
+opar <- par()
+par(mfrow=c(1,2))
+plot(train$total_bedrooms, train$households,
+     xlab="Total Bedroom", ylab="Households", )
+hist(train$total_bedrooms, main="Total Number of Bedrooms", xlab="total_bedroom")
+```
+The graph on the left shows a plot between total_bedrooms and households with total_bedrooms on the x-axis and households on the y-axis. As we can see clearly that there is a linear trend between total bedroom and households. The graph on the right shows an histogram of total_bedrooms showing much that mostly total number of bedroom lies between 0 and 1000 in a certain block in California.
+
+
+## Building a Linear Regression Model
+
+Here we are building a simple Linear Regression model which uses one predictor
+```{r}
+lm1 <- lm(total_bedrooms~households, data=train)
+summary(lm1)
+```
+The first thing the summary shows as is the **formula** that we use for the linear regression. Here, total_bedroom as a function of households is the formula.  
+  
+The second thing it is showing is **Residual errors** which indicate how far off the values were from the regression line.  
+  
+Next it shows the **Coefficients**:  
+a. The *Estimate* tells us that the for every households total_bedrooms increase by 1.079820  
+b. The *std. Error* (Standard Error) is the estimate that how much variance is between them.  
+c. The *t value* shows the number the estimate coefficient is from 0 from standard deviation. If the value is 0 it shows that there is no relationship between the target and the predictor.  
+d. The *p-value* is used to prove that if null hypothesis is true or not. If the p-value is < .05 it means it is a good fit.  
+  
+The last part shows the statistics of the overall model and tells us if the model is good. **Multiple R-square** value and **Adjusted R-square value** is 0.9576 which is closer to 1 and the **p-value** is closer to 0 showing that the model here overall is a good model.
+
+### Plotting the Residuals
+```{r}
+par(mfrow=c(2,2))
+plot(lm1)
+```
+
+
+1. For **Residuals vs Fitted**, we are looking for the residuals to be evenly distributed around the red line. Since the model have large amount of data we can see that some of the residuals are plotted evenly but other have a higher y-values  
+2. The second plot **Normal Q-Q** looks for normal distribution in which residuals are along the dotted line. In this graph we can see that residuals follow the straight line till 2 on the x-axis till it falls off.  
+3. The third plot **Scale-Location** shows us if the residuals are spread equally along the ranges. It can be seen that the residuals varies alot. This also means that the data doesn't have the property of homoscedasticity  
+4. The fourth plot is **Residuals vs Leverage** which helps us to find influential cases in the data. Influential cases are those which are listed beyond the *Cook's distance* (the dotted line). It can be seen that 12377, 12375 and 13140 are some unusual cases  
+
+
+## Multiple Linear Regression Model  
+Linear regression model with more than one predictor is called Multiple Linear Regression. For multiple linear regression we would like to see the effect of households and population on total_bedrooms
+
+```{r}
+mlm <- lm(total_bedrooms~households+population, data=train)
+summary(mlm)
+```
+### Multiple Linear Regression Model Residual Plot
+
+```{r}
+par(mfrow=c(2,2))
+plot(mlm)
+```
+
+
+## Linear Regression with multiple predictors
+
+```{r}
+lm3 <- lm(total_bedrooms ~ households + population + total_rooms, data=train)
+summary(lm3)
+```
+### Residual Plots for third model
+```{r}
+par(mfrow=c(2,2))
+plot(lm3)
+```
+
+## Comparing The Results of different Models
+```{r}
+anova(lm1, mlm, lm3)
+```
+
+If we focus on the third part of the summary of each model we can clearly see that lm3 is the better model. lm3 have Adjusted R-squared of 0.9654 while lm1 had 0.9576 and mlm had a value of 0.9583. In addition to this lm3 had the lowest Residual standard error with the value of 77.88 while lm1 and mlm had 86.21 and 85.47 respectively. We can also see the difference by using anova function. lm3 has the lowest Res.Df and RSS.
+
+
+## Prediction And Evaluation on the Test Data
+
+```{r}
+
+pred1 <- predict(lm1, newdata = test, use="complete.obs")
+cor1 <- cor(pred1, test$total_bedrooms, use="complete.obs")
+mse1 <- mean((pred1 - test$total_bedrooms)^2, na.rm=TRUE)
+
+print(paste('correlation for lm1:', cor1))
+print(paste('mse of lm1:', mse1))
+
+
+pred2 <- predict(mlm, newdata = test, use="complete.obs")
+cor2 <- cor(pred2, test$total_bedrooms, use="complete.obs")
+mse2 <- mean((pred2 - test$total_bedrooms)^2, na.rm=TRUE)
+
+print(paste('correlation for lm2:', cor2))
+print(paste('mse of lm2:', mse2))
+
+pred3 <- predict(lm3, newdata = test, use="complete.obs")
+cor3 <- cor(pred3, test$total_bedrooms, use="complete.obs")
+mse3 <- mean((pred3 - test$total_bedrooms)^2, na.rm=TRUE)
+
+print(paste('correlation for lm3:', cor3))
+print(paste('mse of lm3:', mse3))
+
+
+```
+As it is displayed that the correlation is increasing from lm1 to mlm to lm3 and the mean square error is decreasing from lm1 to mlm to lm3. This is due to the fact that more predictors were added to the model, so the model was trained on more data and it was able to make better predictions.
