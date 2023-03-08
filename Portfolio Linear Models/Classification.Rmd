@@ -9,7 +9,6 @@ output:
 
 source:https://www.kaggle.com/datasets/whenamancodes/credit-card-customers-prediction
 
-**(Note: Few of the code snippets used in this notebook is taken from Professor's notebooks on github repo)**
 
 In linear regression the target is quantitative while in logistical regression target is qualitative. In logistic regression the target is divided in to different classification. These classification can be binomial or it can be multiclass. In logistic regression the observations are separated into regions with each region having a same class.
 
@@ -50,7 +49,6 @@ tail(train)
 As we can see here there are columns that can be good predictor. For this dataset our target can be Income_Category and our predictors can be Customer_Age, Gender, Education_Level, Card_Category and Credit_Limit
 
 since we are only interested in 6 columns we can reduce the dataset to:
-**(Note:The only reason I am reusing code for test train is because Professor specified in the Assignment details to perform data exploration on training data. If I am making changes to training data then I have to make changes to testing data as well)**
 
 ```{r}
 train <- train[,c(3,4,6,8,9,14)]
@@ -102,7 +100,7 @@ The graph on the left is an histogram of Income_category. It shows that data is 
 
 ## Logistic Regression Model, Summary And Prediction  
   
-**(Note: parts related to logistical regression on the assignment are consolidated together in this section because there are multiple classification of target so to make a model for these multiple classification I used a function. The model inside the function was inaccessible outside the function)**  
+**(Note: parts related to logistical regression are consolidated together in this section because there are multiple classification of target so to make a model for these multiple classification I used a function. The model inside the function was inaccessible outside the function)**  
   
 First we would divide the data set into different categories. Dataset in a category of itself will have the value of 1 while other categories will have a value of 0
 ```{r}
@@ -175,7 +173,7 @@ For this table we look at the diagnol value (True_Positive and True_Negative). F
 
 ## Naive Bayes, Summary And Prediction  
   
-**(Note: parts related to Naive Bayes on the assignment are consolidated together in this section because there are multiple classification of target so to make a model for these multiple classification I used a function. The model inside the function was inaccessible outside the function)**  
+**(Note: parts related to Naive Bayes are consolidated together in this section because there are multiple classification of target so to make a model for these multiple classification I used a function. The model inside the function was inaccessible outside the function)**  
 
 #### Summary
 For Naive Bayes we have to first load the library e1071 and then run the naive bayes model on the training data. Here we are trying to predict Income_Category based on the Customer_Age, Gender, Education_Level, Card_Category and Credit_Limit

@@ -8,7 +8,7 @@ output:
 ---
 
 The source of the data taken in this book is: https://www.kaggle.com/datasets/shibumohapatra/house-price  
-**(Note: Few of the code snippets used in this notebook is taken from Professor's notebooks on github repo)**
+
 
 ## Reading the data from a CSV file
 
