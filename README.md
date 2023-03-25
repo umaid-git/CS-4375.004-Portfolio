@@ -10,5 +10,5 @@ Demonstration of [Linear Regression](https://github.com/umaid-git/CS-4375.004-Po
   
 Building A Linear Regression and Naive Bayes Model [from scratch in C++](https://github.com/umaid-git/CS-4375.004-Portfolio/tree/main/C%2B%2B%20Algorithms%20from%20Scratch). These models were build with the help of fellow student Aleeza Athar  
 
-Portfolio Componinet [Searching for similarity](Similarityhttps://github.com/umaid-git/CS-4375.004-Portfolio/tree/main/Portfolio%20Component%20Searching%20for%20SimilaritySimilarity%20and%20Ensemble)
+Portfolio Componinet [Searching for similarity](https://github.com/umaid-git/CS-4375.004-Portfolio/tree/main/Portfolio%20Component%20Searching%20for%20SimilaritySimilarity%20and%20Ensemble)
 
