@@ -13,3 +13,5 @@ Building A Linear Regression and Naive Bayes Model [from scratch in C++](https:/
 Portfolio Component [Searching for similarity](https://github.com/umaid-git/CS-4375.004-Portfolio/tree/main/Portfolio%20Component%20Searching%20for%20SimilaritySimilarity%20and%20Ensemble)
 
 Portfolio Component [Python ML with sklearn](https://github.com/umaid-git/CS-4375.004-Portfolio/blob/main/Python%20ML%20with%20sklearn/Portfolio_Assignment_ML_with_sklearn.pdf)
+
+Portfolio Component [Image Classification with DL](https://github.com/umaid-git/CS-4375.004-Portfolio/blob/main/Portfolio%20Assignment%20Image%20Classification/Image_Classification_with_DL.pdf)
